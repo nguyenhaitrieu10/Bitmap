@@ -62,7 +62,7 @@ void Bitmap::readBitmap(FILE *f)
 	for (int i = 0; i < rowCount; i++)
 	{
 		fread(pixels + (rowCount - 1 - i)*columnCount * 3, 3, columnCount, f);
-		fread(padding, paddingCount, 1, f); // bỏ đọc padding
+		fread(padding, 1, paddingCount, f); // bỏ đọc padding
 	}
 }
 
@@ -80,7 +80,7 @@ void Bitmap::writeBitmap(FILE *f)
 	for (int i = 0; i < rowCount; i++)
 	{
 		fwrite(pixels + (rowCount - 1 - i)*columnCount * 3, 3, columnCount, f);
-		fwrite(padding, 3, paddingCount, f); // ghi padding
+		fwrite(padding, 1, paddingCount, f); // ghi padding
 	}
 }
 
@@ -92,9 +92,8 @@ void Bitmap::drawBitmap()
 	for (int i = 0; i < rowCount; i++)
 		for (int j = 0; j < columnCount; j++)
 		{
-			//RGB pixel = this->pixels[i][j];
-			unsigned char *color = pixels + (i* columnCount +j)* 3;
-			SetPixel(hdc, j, i, RGB(*color, *(color+1), *(color+2)));
+			RGB *pixel = (RGB*)(pixels + (i* columnCount + j) * 3);
+			SetPixel(hdc, j, i, RGB(pixel->getRed(), pixel->getGreen(), pixel->getBlue()));
 		}
 
 	ReleaseDC(console, hdc);
@@ -108,10 +107,30 @@ void Bitmap::printBitmapInfo()
 
 void Bitmap::changeBmp(int row, int col, RGB dest)
 {
-	unsigned char *color = pixels + (row * columnCount + col) * 3;
-	*color = dest.getRed();
-	*(color + 1) = dest.getGreen();
-	*(color + 2) = dest.getBlue();
+	if (row >= 0 && col >= 0 && row < rowCount && col < columnCount)
+	{
+		RGB *color = (RGB*)(pixels + (row * columnCount + col) * 3);
+		color->setRed(dest.getRed());
+		color->setGreen(dest.getGreen());
+		color->setBlue(dest.getBlue());
+	}
+}
+
+Bitmap& Bitmap::operator =(const Bitmap &source)
+{
+	if (this != &source)
+	{
+		delete[]pixels;
+		header = source.header;
+		dib = source.dib;
+		columnCount = source.columnCount;
+		rowCount = source.rowCount;
+
+		// sao chép mảng pixels
+		pixels = new unsigned char[columnCount*rowCount*sizeof(RGB)];
+		memcpy(pixels, source.pixels, columnCount*rowCount*sizeof(RGB));
+	}
+	return *this;
 }
 
 void Bitmap::increaseLightness(unsigned char value)
@@ -119,30 +138,35 @@ void Bitmap::increaseLightness(unsigned char value)
 	unsigned char *color = pixels;
 	for (int i = 0; i < rowCount * columnCount * 3; i++)
 	{
-		(*color) += value;
+		if ((*color) + value > 255)
+			(*color) = 255;
+		else
+			*color += value;
 		color++;
 	}
 }
 
 void Bitmap::decreaseLightness(unsigned char value)
 {
-	increaseLightness(-value);
+	unsigned char *color = pixels;
+	for (int i = 0; i < rowCount * columnCount * 3; i++)
+	{
+		if ((*color) - value < 0)
+			(*color) = 0;
+		else
+			*color -= value;
+		color++;
+	}
 }
 
 void Bitmap::editBmp(void (*handle) (RGB &color))
 {
 	RGB *color = (RGB*)pixels;
-	for (int i = 0; i < rowCount * columnCount * 3; i++)
+	for (int i = 0; i < rowCount * columnCount ; i++)
 	{
 		handle(*color);
 		color++;
 	}
-}
-
-
-Bitmap::~Bitmap()
-{
-	delete[]pixels;
 }
 
 bool Bitmap::isBmpFile()
@@ -151,13 +175,19 @@ bool Bitmap::isBmpFile()
 	return sign[0] == 'B' && sign[1] == 'M';
 }
 
-void increLighness(RGB &color)
+RGB Bitmap::getPixel(int row, int col)
 {
-	color.setRed(color.getRed() + 10);
-	color.setGreen(color.getGreen() + 10);
-	color.setBlue(color.getBlue() + 10);
+	RGB color(WHITE,WHITE,WHITE);
+	if (row < rowCount && col < columnCount && row >=0 && col >=0)
+		color = *(RGB*)(pixels + (row * columnCount + col) * sizeof(RGB));
+	
+	return color;
+}
+
+Bitmap::~Bitmap()
+{
+	delete[]pixels;
 }
 
 
-//int gray = p.pixels[i][j].red*0.299 + p.pixels[i][j].green*0.587 + p.pixels[i][j].blue*0.114;
-//p.pixels[i][j].red = p.pixels[i][j].green = p.pixels[i][j].blue = (gray>128) ? 255 : 0;
+

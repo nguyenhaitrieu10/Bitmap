@@ -3,68 +3,93 @@
 #include <Windows.h>
 using namespace std;
 
-//1) Cho trước 1 ảnh, hãy chuyển ảnh sang dạng Grayscale(tức là Red = Green = Blue).
-//Gợi ý : Red(mới) = Green(mới) = Blue(mới) = 0.3* Red(cũ) + 0.59* Green(cũ) + 0.11 * Blue(cũ).
-//2) Làm ảnh ố vàng(giả làm ảnh cũ) :
-//Cường độ sáng(gọi là I) = 0.3* Red(cũ) + 0.59* Green(cũ) + 0.11 * Blue(cũ).
-//Red(mới) = I * 1.1;
-//Green(mới) = I * 1.15;
-//Blue(mới) = I *0.75;
-//3) Làm mờ ảnh :
-//Mỗi pixel ảnh(mới) = trung bình cộng 9 pixel xung quanh
-
 int main()
 {
 	char pathIn[100] = "test.bmp"; // đường dẫn file input
-	char pathOut[100] = "../result.bmp"; // đường dẫn file output
+	char pathOut[100] = "clone.bmp"; // đường dẫn file output
 	FILE *fin = fopen(pathIn, "rb"); 
 	FILE *fout = fopen(pathOut, "wb");
 
-	if (!fin) // không tìm thấy file
+	if (!fin || !fout) // không tìm thấy đường dẫn
 	{
-		cout << pathIn << " not found!" << endl;
-		return 1;
-	}
-	if (!fout) // không tìm thấy file
-	{
-		cout << pathOut << " not found!" << endl;
+		cout << "Files not found!" << endl;
 		return 1;
 	}
 
-	Bitmap bm;        // tạo đối tượng Bitmap
-	bm.readBitmap(fin); // đọc file Bitmap (1)
+	// (1) Đọc file Bitmap 
+	Bitmap bm;        
+	bm.readBitmap(fin);
 
 	if (!bm.isBmpFile()) // file không phải định dạng BMP
 	{
 		cout << pathIn << " is not Bmp file!" << endl;
 		return 1;
 	}
+	bm.drawBitmap(); // Vẽ Bimap vừa đọc lên console
 
-	//bm.drawBitmap(); // Vẽ Bimap vừa đọc lên console
-
-	bm.writeBitmap(fout); // ghi file Bitmap xuống ổ cứng (2)
+	// (2) Ghi file Bitmap xuống ổ cứng
+	bm.writeBitmap(fout); 
 	
-	bm.printBitmapInfo(); // xuất ra các thông tin cơ bản của ảnh (3)
+	// (3) Xuất ra các thông tin cơ bản của ảnh
+	bm.printBitmapInfo(); 
+	Sleep(2000);
+	bm.drawBitmap(); 
+
+	// (4) Thay đổi giá trị điểm ảnh (demo chuyển 1 vùng ảnh (100x100) thành đen)
+	RGB colorDest(BLACK, BLACK, BLACK); // Giá trị ta muốn chuyển đến  
+	Bitmap temp = bm;
+	for (int i = 0; i < 400; i++)
+		for (int j = 0; j < 150; j++)
+			temp.changeBmp(i, j, colorDest);
+	temp.drawBitmap();
+	RGB colorDest2(WHITE, WHITE, WHITE);
+	for (int i = 0; i < 400; i++)
+		for (int j = 300; j < 400; j++)
+			temp.changeBmp(i, j, colorDest2);
+	temp.drawBitmap();
+
+	// (5) Tạo Bitmap mới bằng cách sao chép từ 1 đối tượng Bitmap khác
+	Bitmap clone(bm);
+
+	// (6) Tạo Bitmap mới cắt 1 phần từ Bitmap có sẵn
+	Bitmap part(bm, 50, 150, 300, 300); // cắt từ đoạn (50,150) -> (300,300)
 	
-	// thay đổi giá trị điểm ảnh (4)
-	RGB colorDest(BLACK, BLACK, BLACK);
-	for (int i = 0; i < 100; i++)
-		for (int j = 0; j < 100; j++)
-			bm.changeBmp(i, j, colorDest);
+	// (7) Tăng giảm độ sáng của ảnh
+	clone.increaseLightness(5); // tăng 5 đơn vị
+	clone.drawBitmap();			// vẽ ảnh lên console
+	clone.increaseLightness(5); // tăng 5 đơn vị
+	clone.drawBitmap();			// vẽ ảnh lên console
+	clone.decreaseLightness(20);// giảm 20 đơn vị
+	clone.drawBitmap();			// vẽ ảnh lên console
 
-	// Tạo Bitmap mới cắt 1 phần từ Bitmap có sẵn
-	Bitmap part(bm, 50, 150, 300, 300);
+	
+	// (8) Nhận vào cơ chế xử lý điểm ảnh (dạng con trỏ hàm) và áp dụng lên toàn bộ ảnh
+	// demo 1: chuyển sang ảnh trắng đen
+	void(*pFunc) (RGB&) = RGB::convertWhiteBlack;
+	clone.editBmp(pFunc);
+	clone.drawBitmap();
+	FILE *fdemo = fopen("WhiteBlack.bmp", "wb");
+	clone.writeBitmap(fdemo);
+	fclose(fdemo);
 
-	bm.drawBitmap();
-	bm.encreaseLightness();
+	// demo 2: chuyển sang ảnh GrayScale
+	pFunc = RGB::convertGrayScale;
+	clone = bm;
+	clone.editBmp(pFunc);
+	clone.drawBitmap();
+	fdemo = fopen("GrayScale.bmp", "wb");
+	clone.writeBitmap(fdemo);
+	fclose(fdemo);
 
-	Sleep(1000);
+	// demo 3: Làm ảnh úa vàng (giả làm ảnh cũ)
+	pFunc = RGB::convertOld;
+	clone = bm;
+	clone.editBmp(pFunc);
+	clone.drawBitmap();
+	fdemo = fopen("Old.bmp", "wb");
+	clone.writeBitmap(fdemo);
+	fclose(fdemo);
 
-	bm.drawBitmap();
-	bm.encreaseLightness();
-	bm.drawBitmap();
-	bm.encreaseLightness();
 	fcloseall();
-	system("pause");
 	return 0;
 }
