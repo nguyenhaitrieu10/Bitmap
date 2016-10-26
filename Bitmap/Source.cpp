@@ -35,17 +35,15 @@ int main()
 	Sleep(2000);
 	bm.drawBitmap(); 
 
-	// (4) Thay đổi giá trị điểm ảnh (demo chuyển 1 vùng ảnh (100x100) thành đen)
-	RGB colorDest(BLACK, BLACK, BLACK); // Giá trị ta muốn chuyển đến  
+	// (4) Thay đổi giá trị điểm ảnh
+	// demo: Tô đen cột trái ảnh
+	RGB dest(BLACK, BLACK, BLACK);
 	Bitmap temp = bm;
-	for (int i = 0; i < 400; i++)
-		for (int j = 0; j < 150; j++)
-			temp.changeBmp(i, j, colorDest);
-	temp.drawBitmap();
-	RGB colorDest2(WHITE, WHITE, WHITE);
-	for (int i = 0; i < 400; i++)
-		for (int j = 300; j < 400; j++)
-			temp.changeBmp(i, j, colorDest2);
+	for (int i = 0; i < bm.getRowCount(); i++)
+		for (int j = 0; j < bm.getcolumCount() / 3; j++)
+		{
+			temp.changeBmp(i, j, dest);
+		}
 	temp.drawBitmap();
 
 	// (5) Tạo Bitmap mới bằng cách sao chép từ 1 đối tượng Bitmap khác
@@ -64,12 +62,12 @@ int main()
 
 	
 	// (8) Nhận vào cơ chế xử lý điểm ảnh (dạng con trỏ hàm) và áp dụng lên toàn bộ ảnh
-	// demo 1: chuyển sang ảnh trắng đen
+	// demo 1: chuyển sang ảnh trắng đen 
 	void(*pFunc) (RGB&) = RGB::convertWhiteBlack;
 	clone.editBmp(pFunc);
 	clone.drawBitmap();
 	FILE *fdemo = fopen("WhiteBlack.bmp", "wb");
-	clone.writeBitmap(fdemo);
+	clone.writeBitmap(fdemo); 
 	fclose(fdemo);
 
 	// demo 2: chuyển sang ảnh GrayScale
@@ -78,7 +76,7 @@ int main()
 	clone.editBmp(pFunc);
 	clone.drawBitmap();
 	fdemo = fopen("GrayScale.bmp", "wb");
-	clone.writeBitmap(fdemo);
+	clone.writeBitmap(fdemo); 
 	fclose(fdemo);
 
 	// demo 3: Làm ảnh úa vàng (giả làm ảnh cũ)
@@ -87,7 +85,7 @@ int main()
 	clone.editBmp(pFunc);
 	clone.drawBitmap();
 	fdemo = fopen("Old.bmp", "wb");
-	clone.writeBitmap(fdemo);
+	clone.writeBitmap(fdemo); 
 	fclose(fdemo);
 
 	fcloseall();

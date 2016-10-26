@@ -184,6 +184,16 @@ RGB Bitmap::getPixel(int row, int col)
 	return color;
 }
 
+uint32_t Bitmap::getRowCount()
+{
+	return rowCount;
+}
+
+uint32_t Bitmap::getcolumCount()
+{
+	return columnCount;
+}
+
 Bitmap::~Bitmap()
 {
 	delete[]pixels;
