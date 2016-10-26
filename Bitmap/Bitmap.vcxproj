@@ -79,7 +79,6 @@
     <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="BmpDib.cpp" />
     <ClCompile Include="BmpHeader.cpp" />
-    <ClCompile Include="PixelArray.cpp" />
     <ClCompile Include="RGB.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
@@ -87,7 +86,6 @@
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="BmpDib.h" />
     <ClInclude Include="BmpHeader.h" />
-    <ClInclude Include="PixelArray.h" />
     <ClInclude Include="RGB.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

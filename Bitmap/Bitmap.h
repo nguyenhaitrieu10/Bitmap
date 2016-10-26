@@ -1,7 +1,8 @@
 ﻿#pragma once
 #include "BmpDib.h"
 #include "BmpHeader.h"
-#include "PixelArray.h"
+#include <memory>
+#include <Windows.h>
 #define LIGHT_UNIT 10
 #pragma pack(1)
 class Bitmap
@@ -9,7 +10,9 @@ class Bitmap
 private:
 	BmpHeader header;
 	BmpDib dib;
-	PixelArray data;
+	unsigned char *pixels;
+	uint32_t rowCount;
+	uint32_t columnCount;
 public:
 	// nhóm khởi tạo
 	Bitmap();
@@ -23,8 +26,8 @@ public:
 	void drawBitmap();
 	void printBitmapInfo();
 	void changeBmp(int row, int col, RGB dest);
-
-	void encreaseLightness(unsigned char value = LIGHT_UNIT);
+	
+	void increaseLightness(unsigned char value = LIGHT_UNIT);
 	void decreaseLightness(unsigned char value = LIGHT_UNIT);
 	void editBmp(void (*handle) (RGB &color));
 	~Bitmap();

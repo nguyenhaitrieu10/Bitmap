@@ -7,9 +7,9 @@
 class RGB
 {
 private:
-	unsigned char blue;
-	unsigned char green;
 	unsigned char red;
+	unsigned char green;
+	unsigned char blue;
 public:
 	RGB();
 	RGB(unsigned char newRed, unsigned char newGreen, unsigned char newBlue);
