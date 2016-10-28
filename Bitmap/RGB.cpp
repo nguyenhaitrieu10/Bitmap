@@ -47,53 +47,29 @@ RGB::~RGB()
 
 //------- Các hàm xử lý điểm ảnh có thể truyền vào hàm editBmp() --------------
 
-// Tăng độ sáng ảnh
-void RGB::increLighness(RGB &color)
-{
-	unsigned char _red = color.getRed();
-	unsigned char _green = color.getGreen();
-	unsigned char _blue = color.getBlue();
-
-	color.setRed((_red + LIGHT_UNIT > 255) ? 255 : (_red + LIGHT_UNIT));
-	color.setGreen((_green + LIGHT_UNIT > 255) ? 255 : (_green + LIGHT_UNIT));
-	color.setBlue((_blue + LIGHT_UNIT > 255) ? 255 : (_blue + LIGHT_UNIT));
-}
-
 // Chuyển sang ảnh trắng đen
-void RGB::convertWhiteBlack(RGB &color)
+void convertWhiteBlack(RGB &color)
 {
-	unsigned char _red = color.getRed();
-	unsigned char _green = color.getGreen();
-	unsigned char _blue = color.getBlue();
-
-	int gray = _red*0.299 + _green*0.587 + _blue*0.114;
-	color.setRed((gray > 128) ? 255 : 0);
-	color.setGreen((gray > 128) ? 255 : 0);
-	color.setBlue((gray > 128) ? 255 : 0);
+	int gray = color.red*0.299 + color.green*0.587 + color.blue*0.114;
+	color.red = (gray > 128) ? 255 : 0;
+	color.green = (gray > 128) ? 255 : 0;
+	color.blue = (gray > 128) ? 255 : 0;
 }
 
 // Làm ảnh ố vàng (giả làm ảnh cũ) :
-void RGB::convertOld(RGB &color)
+void convertOld(RGB &color)
 {
-	unsigned char _red = color.getRed();
-	unsigned char _green = color.getGreen();
-	unsigned char _blue = color.getBlue();
-
-	int I = _red*0.299 + _green*0.587 + _blue*0.114;
-	color.setRed( I*1.1 > 255? 255: I*1.1);
-	color.setGreen(I*1.15 > 255 ? 255 : I*1.15);
-	color.setBlue(I*0.75 > 255 ? 255 : I*0.75);
+	int I = color.red*0.299 + color.green*0.587 + color.blue*0.114;
+	color.red = I*1.1 > 255? 255: I*1.1;
+	color.green = I*1.15 > 255 ? 255 : I*1.15;
+	color.blue = I*0.75 > 255 ? 255 : I*0.75;
 }
 
 // Chuyển ảnh GrayScale
-void RGB::convertGrayScale(RGB& color)
+void convertGrayScale(RGB& color)
 {
-	unsigned char _red = color.getRed();
-	unsigned char _green = color.getGreen();
-	unsigned char _blue = color.getBlue();
-
-	int I = _red*0.299 + _green*0.587 + _blue*0.114;
-	color.setRed(I);
-	color.setGreen(I);
-	color.setBlue(I);
+	int I = color.red*0.299 + color.green*0.587 + color.blue*0.114;
+	color.red = I;
+	color.green = I;
+	color.blue = I;
 }

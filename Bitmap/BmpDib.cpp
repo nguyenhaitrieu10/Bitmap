@@ -60,7 +60,7 @@ char BmpDib::countPadding()
 	return (4 - (this->imageWidth * (this->pixelSize / 8) % 4)) % 4;
 }
 
-void BmpDib::setNewSize(uint32_t width, uint32_t height)
+void BmpDib::setNewSize(uint32_t height, uint32_t width)
 {
 	this->imageWidth = width;
 	this->imageHeight = height;

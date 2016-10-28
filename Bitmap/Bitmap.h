@@ -20,6 +20,7 @@ public:
 	void readBitmap(FILE *fin);
 	void writeBitmap(FILE *fout);
 	void printBitmapInfo();
+	RGB getPixel(int row, int col);
 	void changeBmp(int row, int col, RGB dest);
 	void increaseLightness(unsigned char value = LIGHT_UNIT);
 	void decreaseLightness(unsigned char value = LIGHT_UNIT);
@@ -27,11 +28,11 @@ public:
 
 	bool isBmpFile();
 	void drawBitmap();
-	RGB getPixel(int row, int col);
 	Bitmap& operator =(const Bitmap &bm);
 	uint32_t getRowCount();
 	uint32_t getcolumCount();
 
 	~Bitmap();
 };
+
 

@@ -20,10 +20,10 @@ public:
 	void setGreen(unsigned char value);
 	void setBlue(unsigned char value);
 
-	static void increLighness(RGB& color);
-	static void convertGrayScale(RGB& color);
-	static void convertWhiteBlack(RGB& color);
-	static void convertOld(RGB &color);
+	friend void increLighness(RGB& color);
+	friend void convertGrayScale(RGB& color);
+	friend void convertWhiteBlack(RGB& color);
+	friend void convertOld(RGB &color);
 	~RGB();
 };
 

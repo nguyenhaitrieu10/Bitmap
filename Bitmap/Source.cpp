@@ -49,9 +49,13 @@ int main()
 	// (5) Tạo Bitmap mới bằng cách sao chép từ 1 đối tượng Bitmap khác
 	Bitmap clone(bm);
 
+	fclose(fout);
+	fout = fopen("Part.bmp", "wb");
 	// (6) Tạo Bitmap mới cắt 1 phần từ Bitmap có sẵn
 	Bitmap part(bm, 50, 150, 300, 300); // cắt từ đoạn (50,150) -> (300,300)
+	part.writeBitmap(fout);
 	
+
 	// (7) Tăng giảm độ sáng của ảnh
 	clone.increaseLightness(5); // tăng 5 đơn vị
 	clone.drawBitmap();			// vẽ ảnh lên console
@@ -63,7 +67,7 @@ int main()
 	
 	// (8) Nhận vào cơ chế xử lý điểm ảnh (dạng con trỏ hàm) và áp dụng lên toàn bộ ảnh
 	// demo 1: chuyển sang ảnh trắng đen 
-	void(*pFunc) (RGB&) = RGB::convertWhiteBlack;
+	void(*pFunc) (RGB&) = convertWhiteBlack;
 	clone.editBmp(pFunc);
 	clone.drawBitmap();
 	FILE *fdemo = fopen("WhiteBlack.bmp", "wb");
@@ -71,7 +75,7 @@ int main()
 	fclose(fdemo);
 
 	// demo 2: chuyển sang ảnh GrayScale
-	pFunc = RGB::convertGrayScale;
+	pFunc = convertGrayScale;
 	clone = bm;
 	clone.editBmp(pFunc);
 	clone.drawBitmap();
@@ -80,7 +84,7 @@ int main()
 	fclose(fdemo);
 
 	// demo 3: Làm ảnh úa vàng (giả làm ảnh cũ)
-	pFunc = RGB::convertOld;
+	pFunc = convertOld;
 	clone = bm;
 	clone.editBmp(pFunc);
 	clone.drawBitmap();
