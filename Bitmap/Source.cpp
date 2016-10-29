@@ -35,17 +35,21 @@ int main()
 	Sleep(2000);
 	bm.drawBitmap(); 
 
+	fclose(fout);
+	fout = fopen("Border.bmp", "wb");
 	// (4) Thay đổi giá trị điểm ảnh
-	// demo: Tô đen cột trái ảnh
-	RGB dest(BLACK, BLACK, BLACK);
+	// demo: Tô viền đỏ cho ảnh
+	RGB dest(255, 0, 0);
 	Bitmap temp = bm;
 	for (int i = 0; i < bm.getRowCount(); i++)
-		for (int j = 0; j < bm.getcolumCount() / 3; j++)
+		for (int j = 0; j < bm.getcolumCount(); j++)
 		{
-			temp.changeBmp(i, j, dest);
+			if (i<10 || i>bm.getRowCount() - 10 || j<10 || j>bm.getcolumCount() - 10)
+				temp.changeBmp(i, j, dest);
 		}
 	temp.drawBitmap();
-
+	temp.writeBitmap(fout); // Ghi ảnh xuống ổ cứng
+	
 	// (5) Tạo Bitmap mới bằng cách sao chép từ 1 đối tượng Bitmap khác
 	Bitmap clone(bm);
 
@@ -56,18 +60,21 @@ int main()
 	part.writeBitmap(fout);
 	
 
+	fclose(fout);
+	fout = fopen("ChangeLightness.bmp", "wb");
 	// (7) Tăng giảm độ sáng của ảnh
 	clone.increaseLightness(5); // tăng 5 đơn vị
 	clone.drawBitmap();			// vẽ ảnh lên console
 	clone.increaseLightness(5); // tăng 5 đơn vị
 	clone.drawBitmap();			// vẽ ảnh lên console
-	clone.decreaseLightness(20);// giảm 20 đơn vị
+	clone.decreaseLightness(40);// giảm 40 đơn vị
 	clone.drawBitmap();			// vẽ ảnh lên console
-
+	clone.writeBitmap(fout);
 	
 	// (8) Nhận vào cơ chế xử lý điểm ảnh (dạng con trỏ hàm) và áp dụng lên toàn bộ ảnh
 	// demo 1: chuyển sang ảnh trắng đen 
 	void(*pFunc) (RGB&) = convertWhiteBlack;
+	clone = bm; // toán tử "=" đã được nạp chồng
 	clone.editBmp(pFunc);
 	clone.drawBitmap();
 	FILE *fdemo = fopen("WhiteBlack.bmp", "wb");

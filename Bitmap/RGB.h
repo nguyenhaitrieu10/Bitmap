@@ -20,7 +20,6 @@ public:
 	void setGreen(unsigned char value);
 	void setBlue(unsigned char value);
 
-	friend void increLighness(RGB& color);
 	friend void convertGrayScale(RGB& color);
 	friend void convertWhiteBlack(RGB& color);
 	friend void convertOld(RGB &color);
